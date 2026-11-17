@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Панель владельца — СпецТранс</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    // Apply the saved or system theme before the first paint
+    (function () {
+      var t;
+      try { t = localStorage.getItem('spectrans.theme'); } catch (e) {}
+      if (t !== 'light' && t !== 'dark') t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="owner">
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="brand">
+        <span class="brand__icon"><i data-icon="truck"></i></span>
+        <span class="brand__text"><b>СпецТранс</b><small>Панель владельца</small></span>
+      </a>
+      <div class="header__actions">
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Переключить тему"><i data-icon="moon" class="is-moon"></i><i data-icon="sun" class="is-sun"></i></button>
+        <a class="btn btn--light" href="index.html" target="_blank" rel="noopener"><i data-icon="external"></i> <span>Открыть сайт</span></a>
+        <button class="btn btn--light" type="button" id="logout" hidden><i data-icon="logout"></i> <span>Выйти</span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Demo login (client-side only, not real protection) -->
+  <main class="container login" id="login">
+    <form class="panel login__card" id="loginForm" novalidate>
+      <span class="summary__icon"><i data-icon="lock"></i></span>
+      <h1>Вход для владельца</h1>
+      <p>Здесь вы управляете парком: статус техники, цена за месяц и минимальный срок аренды.</p>
+      <label class="field">
+        <span class="field__label">Пароль</span>
+        <span class="input"><i data-icon="lock"></i><input id="pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="••••"></span>
+        <span class="field__error" id="pinError"></span>
+      </label>
+      <button class="btn btn--accent btn--block" type="submit">Войти <i data-icon="arrowRight"></i></button>
+      <p class="login__hint">Демо-доступ: <b>1234</b></p>
+    </form>
+  </main>
+
+  <main class="container dash" id="dash" hidden>
+    <div class="dash__head">
+      <div>
+        <p class="eyebrow">Управление парком</p>
+        <h1>Настройки техники</h1>
+      </div>
+      <div class="dash__side">
+        <p class="dash__note">Цены — в тенге за месяц. Пустая цена показывается на сайте как «по запросу». Изменения сохраняются сразу.</p>
+        <button class="btn btn--accent" type="button" id="addBtn"><i data-icon="plus"></i> Добавить технику</button>
+      </div>
+    </div>
+
+    <div class="counters" id="counters"></div>
+
+    <div class="chips" id="chips" role="tablist" aria-label="Категории техники"></div>
+    <div id="settings"></div>
+
+    <div class="dash__foot">
+      <p class="demo-note"><i data-icon="info"></i> Прототип: данные хранятся в этом браузере. В рабочей версии они будут на сервере, и изменения увидят все посетители.</p>
+      <button class="btn btn--light" type="button" id="resetBtn"><i data-icon="reset"></i> Сбросить к исходным</button>
+    </div>
+  </main>
+
+  <!-- Add / edit a fleet item -->
+  <dialog class="modal" id="editor" aria-labelledby="editorTitle">
+    <form class="modal__card" id="editorForm" novalidate>
+      <div class="modal__head">
+        <h2 id="editorTitle">Новая техника</h2>
+        <button type="button" class="modal__close" data-close aria-label="Закрыть"><i data-icon="close"></i></button>
+      </div>
+
+      <div class="modal__body">
+        <div class="photo-field">
+          <div class="photo-field__preview" id="photoPreview"></div>
+          <div class="photo-field__actions">
+            <label class="btn btn--light photo-field__upload"><i data-icon="upload"></i> <span id="photoBtnText">Загрузить фото</span>
+              <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp">
+            </label>
+            <button type="button" class="btn btn--light" id="photoRemove"><i data-icon="trash"></i> Убрать фото</button>
+            <small>JPG, PNG или WebP. Фото обрежется до 4:3 и уменьшится до 720×540.</small>
+          </div>
+        </div>
+
+        <label class="field">
+          <span class="field__label">Категория</span>
+          <span class="input input--plain"><select id="fCat"></select></span>
+        </label>
+
+        <label class="field">
+          <span class="field__label">Название</span>
+          <span class="input"><i data-icon="truck"></i><input id="fName" type="text" maxlength="90" placeholder="Например: Экскаватор Hitachi ZX200"></span>
+          <span class="field__error" id="fNameErr"></span>
+        </label>
+
+        <label class="field">
+          <span class="field__label">Характеристики <small class="field__opt">через запятую, до 6</small></span>
+          <span class="input"><i data-icon="info"></i><input id="fSpecs" type="text" placeholder="Ковш 1 м³, Гусеничный ход, Вездеход"></span>
+        </label>
+
+        <div class="form__row">
+          <label class="field">
+            <span class="field__label">Цена за месяц</span>
+            <span class="input"><span class="input__prefix">₸</span><input id="fPrice" type="number" min="0" step="10000" placeholder="по запросу" inputmode="numeric"></span>
+          </label>
+          <label class="field">
+            <span class="field__label">Мин. срок, мес.</span>
+            <span class="input"><i data-icon="calendar"></i><input id="fMin" type="number" min="1" max="24" value="1" inputmode="numeric"></span>
+          </label>
+        </div>
+
+        <div class="field">
+          <span class="field__label">Статус</span>
+          <div class="status-switch" id="fStatus" role="radiogroup" aria-label="Статус техники"></div>
+        </div>
+
+        <p class="field__error" id="editorErr"></p>
+      </div>
+
+      <div class="modal__foot">
+        <button type="button" class="btn btn--danger" id="deleteBtn" hidden><i data-icon="trash"></i> <span>Удалить</span></button>
+        <span class="modal__spacer"></span>
+        <button type="button" class="btn btn--light" data-close>Отмена</button>
+        <button type="submit" class="btn btn--accent">Сохранить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"><i data-icon="checkCircle"></i> Сохранено</div>
+
+  <script src="common.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Concept demo for the company owner: keep it out of search engines -->
+  <meta name="robots" content="noindex, nofollow">
+  <title>СпецТранс — аренда спецтехники с операторами по всему Казахстану</title>
+  <meta name="description" content="ИП «СпецТранс», Актобе: аренда дорожно-строительной техники, автокранов и вездеходов Урал с операторами на срок от 1 месяца. Собственный парк более 50 единиц.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    // Apply the saved or system theme before the first paint
+    (function () {
+      var t;
+      try { t = localStorage.getItem('spectrans.theme'); } catch (e) {}
+      if (t !== 'light' && t !== 'dark') t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="#top" class="brand">
+        <span class="brand__icon"><i data-icon="truck"></i></span>
+        <span class="brand__text"><b>СпецТранс</b><small>Аренда спецтехники с операторами</small></span>
+      </a>
+      <div class="header__meta">
+        <span><i data-icon="pin"></i> База в Актобе</span>
+        <span><span class="dot"></span> Работаем по всему Казахстану</span>
+      </div>
+      <div class="header__actions">
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Переключить тему"><i data-icon="moon" class="is-moon"></i><i data-icon="sun" class="is-sun"></i></button>
+        <a class="btn btn--light" href="#order"><i data-icon="doc"></i> Оставить заявку</a>
+        <a class="btn btn--accent" href="https://wa.me/77027578989" target="_blank" rel="noopener"><i data-icon="chat"></i> <span>Написать в WhatsApp</span></a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- Hero -->
+    <section class="container">
+      <div class="hero">
+        <div class="hero__text">
+          <span class="hero__chip"><i data-icon="building"></i> ИП «СпецТранс» · с 2012 года</span>
+          <h1>Аренда спецтехники с&nbsp;операторами <span>по всему Казахстану</span></h1>
+          <p class="hero__lead">Собственный парк более 50 единиц: дорожно-строительная техника, автокраны и вездеходы Урал. Сдаём технику с опытными операторами на срок от&nbsp;1&nbsp;месяца.</p>
+          <div class="hero__actions">
+            <a class="btn btn--accent btn--lg" href="#park">Подобрать технику <i data-icon="arrowDown"></i></a>
+            <a class="btn btn--outline btn--lg" href="https://wa.me/77027578989" target="_blank" rel="noopener"><i data-icon="chat"></i> Написать в WhatsApp</a>
+          </div>
+          <div class="hero__stats">
+            <div><b>50+</b><span>единиц техники</span></div>
+            <div><b>с 2012</b><span>года на рынке</span></div>
+            <div><b id="statMin">от 1 мес.</b><span>срок аренды</span></div>
+          </div>
+        </div>
+        <div class="hero__photo" role="img" aria-label="Автогрейдер SEM 919 на базе компании"></div>
+        <div class="hero__badge"><small>Перед каждым выездом</small><b>Полное ТО и замена шин</b></div>
+      </div>
+
+      <div class="features">
+        <div><span class="features__icon"><i data-icon="garage"></i></span><p><b>Собственный парк</b><small>Более 50 единиц техники</small></p></div>
+        <div><span class="features__icon"><i data-icon="hardhat"></i></span><p><b>Опытные операторы</b><small>С разрешительными документами</small></p></div>
+        <div><span class="features__icon"><i data-icon="wrench"></i></span><p><b>ТО перед выездом</b><small>И замена шин по износу</small></p></div>
+        <div><span class="features__icon"><i data-icon="doc"></i></span><p><b>Полный пакет документов</b><small>Наличный и безналичный расчёт</small></p></div>
+      </div>
+    </section>
+
+    <!-- Fleet -->
+    <section class="section container" id="park">
+      <div class="section__head">
+        <div>
+          <p class="eyebrow">Наш парк</p>
+          <h2>Техника в аренду</h2>
+        </div>
+        <p class="section__aside">Вся техника сдаётся с операторами на срок от 1 месяца. Добавьте нужные машины в заявку — менеджер рассчитает стоимость для вашего объекта.</p>
+      </div>
+      <div class="chips" id="chips" role="tablist" aria-label="Категории техники"></div>
+      <div id="fleet"></div>
+    </section>
+
+    <!-- About -->
+    <section class="section container" id="about">
+      <div class="about">
+        <div class="about__text">
+          <p class="eyebrow">О компании</p>
+          <h2>Работаем с 2012 года</h2>
+          <p>ИП «СпецТранс» сдаёт в аренду дорожную и строительную технику во всех регионах Казахстана. База компании находится в Актобе.</p>
+          <p>Вся техника работает с опытными операторами, у которых есть все разрешительные документы. Перед отправкой на объект каждая машина проходит полное техническое обслуживание и замену шин по износу.</p>
+          <ul class="facts">
+            <li><i data-icon="pin"></i><span><b>База</b><a href="https://2gis.kz/aktobe/search/%D0%9A%D0%B5%D0%BD%D0%B5%D1%81%D0%B0%20%D0%9D%D0%BE%D0%BA%D0%B8%D0%BD%D0%B0%2028%D0%BC" target="_blank" rel="noopener">Актобе, пр. Кенеса Нокина, 28М</a></span></li>
+            <li><i data-icon="calendar"></i><span><b>Срок аренды</b>от 1 месяца, с оператором</span></li>
+            <li><i data-icon="doc"></i><span><b>Документы и оплата</b>полный пакет, наличный и безналичный расчёт</span></li>
+          </ul>
+        </div>
+        <div class="about__photos">
+          <img src="img/ural-kung9.jpg" alt="Вахтовки Урал на базе компании" loading="lazy">
+          <img src="img/crane-ulyanovets.jpg" alt="Автокраны на базе Урал" loading="lazy">
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li><b>Заявка</b><span>Выберите технику и срок, отправьте заявку в WhatsApp.</span></li>
+        <li><b>Расчёт и договор</b><span>Менеджер рассчитает стоимость и подготовит документы.</span></li>
+        <li><b>Доставка на объект</b><span>Привезём технику в любой регион Казахстана.</span></li>
+        <li><b>Работа с оператором</b><span>Опытный оператор и исправная техника на весь срок.</span></li>
+      </ol>
+    </section>
+
+    <!-- Order -->
+    <section class="band" id="order">
+     <div class="container">
+      <div class="section__head">
+        <div>
+          <p class="eyebrow">Заявка на аренду</p>
+          <h2>Соберите заявку</h2>
+          <p class="section__sub">Добавьте технику из каталога, укажите срок и объект — заявка уйдёт менеджеру в WhatsApp.</p>
+        </div>
+      </div>
+
+      <div class="calc">
+        <form class="panel form" id="orderForm" novalidate>
+          <div class="field">
+            <span class="field__label">Техника в заявке</span>
+            <ul class="picked" id="picked"></ul>
+            <span class="input input--plain"><select id="addSelect" aria-label="Добавить технику"></select></span>
+            <span class="field__error" data-err="picked"></span>
+          </div>
+
+          <div class="form__row">
+            <label class="field">
+              <span class="field__label">Срок аренды, месяцев</span>
+              <span class="input"><i data-icon="calendar"></i><input id="months" type="number" min="1" max="24" value="1" inputmode="numeric"></span>
+            </label>
+            <div class="field">
+              <span class="field__label">Форма оплаты</span>
+              <div class="seg" role="radiogroup" aria-label="Форма оплаты">
+                <label><input type="radio" name="pay" value="Безналичный расчёт" checked><span>Безналичный</span></label>
+                <label><input type="radio" name="pay" value="Наличный расчёт"><span>Наличный</span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="notice" id="notice" hidden><i data-icon="info"></i><p id="noticeText"></p></div>
+
+          <label class="field">
+            <span class="field__label">Объект и регион</span>
+            <span class="input"><i data-icon="pin"></i><input id="address" type="text" placeholder="Например: Актюбинская обл., месторождение или адрес"></span>
+            <span class="field__error" data-err="address"></span>
+          </label>
+
+          <label class="check">
+            <input type="checkbox" id="delivery" checked>
+            <span><b>Нужна доставка техники на объект</b><small>Перевозим тралами 25 и 60 т, стоимость — по договорённости</small></span>
+          </label>
+
+          <div class="form__row">
+            <label class="field">
+              <span class="field__label">Ваше имя</span>
+              <span class="input"><i data-icon="user"></i><input id="name" type="text" placeholder="Как к вам обращаться" autocomplete="name"></span>
+              <span class="field__error" data-err="name"></span>
+            </label>
+            <label class="field">
+              <span class="field__label">Компания <small class="field__opt">необязательно</small></span>
+              <span class="input"><i data-icon="building"></i><input id="company" type="text" placeholder="ТОО, ИП или частное лицо" autocomplete="organization"></span>
+            </label>
+          </div>
+
+          <label class="field">
+            <span class="field__label">Комментарий</span>
+            <span class="input input--area"><i data-icon="message"></i><textarea id="comment" rows="3" placeholder="Вид работ, условия на объекте, проживание операторов"></textarea></span>
+          </label>
+        </form>
+
+        <aside class="summary" aria-live="polite">
+          <div class="summary__head">
+            <span class="summary__icon"><i data-icon="doc"></i></span>
+            <div><small>Расчёт заказа</small><b>Примерная стоимость</b></div>
+          </div>
+          <dl class="summary__rows" id="rows"></dl>
+          <div class="summary__total">
+            <span>Итого</span>
+            <b id="total">—</b>
+          </div>
+          <button class="btn btn--accent btn--block" type="submit" form="orderForm">
+            <i data-icon="chat"></i> Отправить заявку в WhatsApp <i data-icon="arrowRight"></i>
+          </button>
+          <p class="summary__note" id="summaryNote">Техника сдаётся с оператором. Точную стоимость назовёт менеджер.</p>
+          <p class="summary__status" id="status" hidden></p>
+        </aside>
+      </div>
+     </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <a href="#top" class="brand">
+        <span class="brand__icon"><i data-icon="truck"></i></span>
+        <span class="brand__text"><b>СпецТранс</b><small>Аренда спецтехники · Актобе</small></span>
+      </a>
+      <div class="footer__links">
+        <a href="https://wa.me/77027578989" target="_blank" rel="noopener"><i data-icon="chat"></i> +7 702 757 89 89</a>
+        <a href="https://www.instagram.com/arenda_spectehniki_060/" target="_blank" rel="noopener"><i data-icon="instagram"></i> arenda_spectehniki_060</a>
+        <a href="admin.html" class="footer__owner"><i data-icon="lock"></i> Вход для владельца</a>
+      </div>
+    </div>
+    <p class="container credits">
+      Концепт сайта для ИП «СпецТранс», не официальный сайт компании. Фото техники — ИП «СпецТранс»; фото Урала с манипулятором —
+      <a href="https://commons.wikimedia.org/wiki/File:Ural_vehicle_with_hydromanipulator_0.jpg" target="_blank" rel="noopener">Sergeev Pavel</a>, Wikimedia Commons (общественное достояние).
+    </p>
+  </footer>
+
+  <script src="common.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
