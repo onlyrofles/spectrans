@@ -554,3 +554,12 @@ img.photo-field__img { display: block; }
 
 /* The photo placeholder must keep the thumbnail size in the owner panel */
 .setting__top .setting__img { width: 84px; height: 64px; }
+
+/* ---------- Fleet quantity ---------- */
+.unit__stock { display: flex; align-items: center; gap: 7px; margin-top: 12px; color: var(--text-2); font-size: 13.5px; font-weight: 600; }
+.unit__stock .ico { width: 16px; height: 16px; color: var(--accent-text); }
+.unit__stock b { color: var(--text); font-weight: 800; }
+/* Panel card: price on its own row, then minimal term | quantity */
+.setting__fields .field--wide { grid-column: 1 / -1; }
+.qty button:disabled { opacity: .35; cursor: default; }
+.qty button:disabled:hover { background: transparent; }

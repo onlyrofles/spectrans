@@ -21,14 +21,22 @@
     { id: 'light', name: 'Лёгкий транспорт' }
   ];
 
+  var MAX_QTY = 99; // machines of one kind in the fleet
+
+  function clampQty(v, fallback) {
+    v = Math.round(Number(v));
+    return v >= 1 ? Math.min(MAX_QTY, v) : fallback;
+  }
+
   // Fleet from the company's own catalog (Tilda site + Instagram highlights).
   // price: tenge per month, null = "on request". minMonths: minimal rental term.
-  // Demo values for the owner preview: sample prices on half of the fleet and a few
-  // busy / "check availability" units, so every catalog state is visible.
+  // qty: how many machines of this kind the company has.
+  // Demo values for the owner preview: sample prices on half of the fleet, a few
+  // busy / "check availability" units and several machines of one kind, so every catalog state is visible.
   var DEFAULTS = [
-    { id: 'cat320', cat: 'road', name: 'Экскаватор гусеничный CAT 320', specs: ['Ковш 1,2 м³'], price: 4800000, minMonths: 2 },
-    { id: 't170', cat: 'road', name: 'Бульдозер ЧТЗ Б10М (Т-170)', specs: ['Рыхлитель', 'Отвал'], price: 3200000, status: 'busy' },
-    { id: 'sem816', cat: 'road', name: 'Бульдозер SEM 816D', specs: ['Рыхлитель', 'Отвал'], status: 'confirm' },
+    { id: 'cat320', cat: 'road', name: 'Экскаватор гусеничный CAT 320', specs: ['Ковш 1,2 м³'], price: 4800000, minMonths: 2, qty: 3 },
+    { id: 't170', cat: 'road', name: 'Бульдозер ЧТЗ Б10М (Т-170)', specs: ['Рыхлитель', 'Отвал'], price: 3200000, status: 'busy', qty: 3 },
+    { id: 'sem816', cat: 'road', name: 'Бульдозер SEM 816D', specs: ['Рыхлитель', 'Отвал'], status: 'confirm', qty: 3 },
     { id: 'sem655', cat: 'road', name: 'Фронтальный погрузчик SEM 655D', specs: ['Ковш 3 м³', 'Грузоподъёмность 5 т'], price: 3000000 },
     { id: 'sem518', cat: 'road', name: 'Каток грунтовый SEM 518', specs: ['Масса 18 т'] },
     { id: 'sem919', cat: 'road', name: 'Автогрейдер SEM 919', specs: ['Планировка и профилирование'], price: 3600000, status: 'busy' },
@@ -62,8 +70,14 @@
     { id: 'gazelle-business', cat: 'light', name: 'ГАЗель Бизнес цельнометаллическая', specs: ['Грузопассажирская'], status: 'confirm' },
     { id: 'sprinter', cat: 'light', name: 'Mercedes-Benz Sprinter с прицепом', specs: ['Фургон', 'Прицеп до 5 т'] }
   ].map(function (e) {
-    return Object.assign({ photo: 'img/' + e.id + '.jpg', price: null, minMonths: 1, status: 'free' }, e);
+    return Object.assign({ photo: 'img/' + e.id + '.jpg', price: null, minMonths: 1, qty: 1, status: 'free' }, e);
   });
+
+  // Items saved before quantities existed get the demo count for known machines, otherwise 1
+  function defaultQty(id) {
+    var d = DEFAULTS.filter(function (x) { return x.id === id; })[0];
+    return d ? d.qty : 1;
+  }
 
   // Escape text before putting it into HTML (names and specs are typed by the owner)
   function esc(s) {
@@ -94,6 +108,7 @@
       photo: cleanPhoto(x.photo),
       price: x.price > 0 ? Math.round(x.price) : null,
       minMonths: x.minMonths >= 1 && x.minMonths <= 24 ? Math.round(x.minMonths) : 1,
+      qty: clampQty(x.qty, defaultQty(id)),
       status: STATUS[x.status] ? x.status : 'free'
     };
   }
@@ -255,7 +270,7 @@
 
   window.Fleet = {
     STATUS: STATUS, CATEGORIES: CATEGORIES, load: load, save: save, reset: reset, onChange: onChange,
-    cleanItem: cleanItem, newId: newId, esc: esc,
+    cleanItem: cleanItem, newId: newId, esc: esc, MAX_QTY: MAX_QTY, clampQty: clampQty,
     money: money, plural: plural, months: months, category: category,
     icon: icon, hydrateIcons: hydrateIcons, photoHtml: photoHtml
   };

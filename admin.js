@@ -53,7 +53,7 @@
   // ---------- Dashboard ----------
   function renderCounters() {
     var n = { free: 0, busy: 0, confirm: 0 };
-    fleet.forEach(function (e) { n[e.status]++; });
+    fleet.forEach(function (e) { n[e.status] += e.qty; }); // machines, not catalog positions
     $('counters').innerHTML = ['free', 'busy', 'confirm'].map(function (s) {
       return '<div class="counter counter--' + s + '"><b>' + n[s] + '</b><span>' + F.STATUS[s].label + '</span></div>';
     }).join('');
@@ -77,10 +77,12 @@
         '<button type="button" class="icon-btn" data-edit="' + e.id + '" title="Редактировать" aria-label="Редактировать: ' + F.esc(e.name) + '">' + F.icon('pencil') + '</button>' +
       '</div>' +
       '<div class="setting__fields">' +
-        '<label class="field"><span class="field__label">Цена за месяц</span>' +
+        '<label class="field field--wide"><span class="field__label">Цена за месяц</span>' +
           '<span class="input"><span class="input__prefix">₸</span><input type="number" min="0" step="10000" data-field="price" value="' + (e.price || '') + '" placeholder="по запросу" inputmode="numeric"></span></label>' +
         '<label class="field"><span class="field__label">Мин. срок, мес.</span>' +
           '<span class="input">' + F.icon('calendar') + '<input type="number" min="1" max="24" data-field="minMonths" value="' + e.minMonths + '" inputmode="numeric"></span></label>' +
+        '<label class="field"><span class="field__label">Количество, шт.</span>' +
+          '<span class="input">' + F.icon('garage') + '<input type="number" min="1" max="' + F.MAX_QTY + '" data-field="qty" value="' + e.qty + '" inputmode="numeric"></span></label>' +
       '</div>' +
       '<p class="field__label">Статус техники</p>' +
       '<div class="status-switch" role="radiogroup" aria-label="Статус: ' + F.esc(e.name) + '">' +
@@ -168,11 +170,15 @@
     if (field === 'price') {
       v = v > 0 ? v : null; // empty or zero = price on request
       input.value = v || '';
+    } else if (field === 'qty') {
+      v = F.clampQty(v, e.qty);
+      input.value = v;
     } else {
       v = Math.min(24, Math.max(1, v || e.minMonths));
       input.value = v;
     }
     e[field] = v;
+    if (field === 'qty') renderCounters();
     persist();
   });
 
@@ -229,6 +235,7 @@
     $('fSpecs').value = e ? e.specs.join(', ') : '';
     $('fPrice').value = e && e.price ? e.price : '';
     $('fMin').value = e ? e.minMonths : 1;
+    $('fQty').value = e ? e.qty : 1;
     setStatusUI(e ? e.status : 'free');
     draftPhoto = e ? e.photo : null;
     $('photoInput').value = '';
@@ -309,6 +316,7 @@
       photo: draftPhoto,
       price: price > 0 ? price : null,
       minMonths: Math.min(24, Math.max(1, Math.round(Number($('fMin').value)) || 1)),
+      qty: F.clampQty($('fQty').value, 1),
       status: currentStatus()
     });
     var isEdit = !!(editingId && byId(editingId));

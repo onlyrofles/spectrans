@@ -110,14 +110,19 @@
           <span class="input"><i data-icon="info"></i><input id="fSpecs" type="text" placeholder="Ковш 1 м³, Гусеничный ход, Вездеход"></span>
         </label>
 
+        <label class="field">
+          <span class="field__label">Цена за месяц</span>
+          <span class="input"><span class="input__prefix">₸</span><input id="fPrice" type="number" min="0" step="10000" placeholder="по запросу" inputmode="numeric"></span>
+        </label>
+
         <div class="form__row">
-          <label class="field">
-            <span class="field__label">Цена за месяц</span>
-            <span class="input"><span class="input__prefix">₸</span><input id="fPrice" type="number" min="0" step="10000" placeholder="по запросу" inputmode="numeric"></span>
-          </label>
           <label class="field">
             <span class="field__label">Мин. срок, мес.</span>
             <span class="input"><i data-icon="calendar"></i><input id="fMin" type="number" min="1" max="24" value="1" inputmode="numeric"></span>
+          </label>
+          <label class="field">
+            <span class="field__label">Количество, шт.</span>
+            <span class="input"><i data-icon="garage"></i><input id="fQty" type="number" min="1" max="99" value="1" inputmode="numeric"></span>
           </label>
         </div>
 

@@ -12,6 +12,8 @@
   function $(id) { return document.getElementById(id); }
   function byId(id) { return fleet.filter(function (e) { return e.id === id; })[0] || null; }
   function pickedQty(id) { var p = picked.filter(function (x) { return x.id === id; })[0]; return p ? p.qty : 0; }
+  // A client can't order more machines than the company has
+  function maxQty(e) { return Math.min(MAX_QTY, e.qty); }
 
   F.hydrateIcons();
 
@@ -24,6 +26,13 @@
   function priceHtml(e) {
     return (e.price ? '<b>' + F.money(e.price) + '</b> /мес' : '<b class="is-ask">Цена по запросу</b>') +
       ' <span>· мин. срок — ' + e.minMonths + ' мес.</span>';
+  }
+
+  // Fleet size, shown only when the company has several machines of this kind
+  function stockHtml(e) {
+    if (e.qty < 2) return '';
+    return '<p class="unit__stock">' + F.icon('garage') + '<span>В парке: <b>' + e.qty + ' шт.</b>' +
+      (e.status === 'busy' ? ' — все в работе' : '') + '</span></p>';
   }
 
   function card(e) {
@@ -40,6 +49,7 @@
       '<div class="unit__body">' +
         '<div class="unit__title"><h3>' + F.esc(e.name) + '</h3>' + badge(e.status) + '</div>' +
         (e.specs.length ? '<ul class="unit__specs">' + e.specs.map(function (s) { return '<li>' + F.esc(s) + '</li>'; }).join('') + '</ul>' : '') +
+        stockHtml(e) +
         '<p class="unit__price">' + priceHtml(e) + '</p>' +
         btn +
       '</div></article>';
@@ -100,7 +110,7 @@
   }
 
   function setQty(id, qty) {
-    picked.forEach(function (x) { if (x.id === id) x.qty = Math.max(1, Math.min(MAX_QTY, qty)); });
+    picked.forEach(function (x) { if (x.id === id) x.qty = Math.max(1, Math.min(maxQty(byId(id)), qty)); });
     renderAll();
   }
 
@@ -113,7 +123,9 @@
         '<span class="qty" role="group" aria-label="Количество">' +
           '<button type="button" data-qty="' + p.id + '" data-step="-1" aria-label="Меньше">' + F.icon('minus') + '</button>' +
           '<b>' + p.qty + '</b>' +
-          '<button type="button" data-qty="' + p.id + '" data-step="1" aria-label="Больше">' + F.icon('plus') + '</button>' +
+          (p.qty >= maxQty(e)
+            ? '<button type="button" disabled aria-label="Больше нет в парке" title="Больше нет в парке">' + F.icon('plus') + '</button>'
+            : '<button type="button" data-qty="' + p.id + '" data-step="1" aria-label="Больше">' + F.icon('plus') + '</button>') +
         '</span>' +
         '<button type="button" class="picked__remove" data-remove="' + p.id + '" aria-label="Убрать из заявки">' + F.icon('close') + '</button>' +
       '</li>';
@@ -258,6 +270,8 @@
     fleet = F.load();
     // Drop machines the owner has just marked as busy
     picked = picked.filter(function (p) { var e = byId(p.id); return e && e.status !== 'busy'; });
+    // ...and fit the order into a fleet the owner has just made smaller
+    picked.forEach(function (p) { p.qty = Math.min(p.qty, maxQty(byId(p.id))); });
     $('statMin').textContent = 'от ' + Math.min.apply(null, fleet.map(function (e) { return e.minMonths; })) + ' мес.';
     renderAll();
   }
