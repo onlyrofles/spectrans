@@ -70,7 +70,7 @@
     { id: 'gazelle-business', cat: 'light', name: 'ГАЗель Бизнес цельнометаллическая', specs: ['Грузопассажирская'], status: 'confirm' },
     { id: 'sprinter', cat: 'light', name: 'Mercedes-Benz Sprinter с прицепом', specs: ['Фургон', 'Прицеп до 5 т'] }
   ].map(function (e) {
-    return Object.assign({ photo: 'img/' + e.id + '.jpg', price: null, minMonths: 1, qty: 1, status: 'free' }, e);
+    return Object.assign({ photo: 'img/' + e.id + '.jpg', price: null, minMonths: 1, qty: 1, status: 'free', hidden: false }, e);
   });
 
   // Items saved before quantities existed get the demo count for known machines, otherwise 1
@@ -109,7 +109,8 @@
       price: x.price > 0 ? Math.round(x.price) : null,
       minMonths: x.minMonths >= 1 && x.minMonths <= 24 ? Math.round(x.minMonths) : 1,
       qty: clampQty(x.qty, defaultQty(id)),
-      status: STATUS[x.status] ? x.status : 'free'
+      status: STATUS[x.status] ? x.status : 'free',
+      hidden: x.hidden === true // switched off by the owner: kept in the panel, not shown on the site
     };
   }
 
@@ -206,7 +207,8 @@
     trash: '<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/>',
     upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>',
     moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
-    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/>'
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/>',
+    eyeOff: '<path d="M9.9 4.2A10 10 0 0 1 12 4c7 0 10 8 10 8a13 13 0 0 1-1.7 2.7"/><path d="M6.6 6.6A13.5 13.5 0 0 0 2 12s3 8 10 8a9.7 9.7 0 0 0 5.4-1.6"/><path d="M14.1 14.1a3 3 0 1 1-4.2-4.2"/><path d="m2 2 20 20"/>'
   };
 
   function icon(name, extraClass) {

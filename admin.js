@@ -53,26 +53,43 @@
   // ---------- Dashboard ----------
   function renderCounters() {
     var n = { free: 0, busy: 0, confirm: 0 };
-    fleet.forEach(function (e) { n[e.status] += e.qty; }); // machines, not catalog positions
+    // Machines (not catalog positions) that clients see on the site
+    fleet.forEach(function (e) { if (!e.hidden) n[e.status] += e.qty; });
     $('counters').innerHTML = ['free', 'busy', 'confirm'].map(function (s) {
       return '<div class="counter counter--' + s + '"><b>' + n[s] + '</b><span>' + F.STATUS[s].label + '</span></div>';
     }).join('');
   }
 
+  // activeCat is 'all', a category id or 'hidden' (machines switched off on the site)
+  function isCategory(id) { return id !== 'all' && id !== 'hidden'; }
+
   function renderChips() {
     var items = [{ id: 'all', name: 'Вся техника', n: fleet.length }].concat(F.CATEGORIES.map(function (c) {
       return { id: c.id, name: c.name, n: fleet.filter(function (e) { return e.cat === c.id; }).length };
     }));
+    var hiddenN = fleet.filter(function (e) { return e.hidden; }).length;
+    if (hiddenN || activeCat === 'hidden') items.push({ id: 'hidden', name: F.icon('eyeOff') + 'Скрытые', n: hiddenN });
     $('chips').innerHTML = items.map(function (c) {
       return '<button type="button" class="chip' + (c.id === activeCat ? ' is-active' : '') + '" data-cat="' + c.id + '">' +
         c.name + ' <span>' + c.n + '</span></button>';
     }).join('');
   }
 
+  function visibleHint(e) {
+    return e.hidden ? 'Скрыта: в каталоге её нет, настройки сохранены' : 'Клиенты видят технику в каталоге';
+  }
+
+  function applyVisibility(card, e) {
+    card.classList.toggle('is-hidden', e.hidden);
+    card.querySelector('.hidden-tag').hidden = !e.hidden;
+    card.querySelector('[data-visible-hint]').textContent = visibleHint(e);
+  }
+
   function settingCard(e) {
-    return '<article class="panel setting" data-id="' + e.id + '">' +
+    return '<article class="panel setting' + (e.hidden ? ' is-hidden' : '') + '" data-id="' + e.id + '">' +
       '<div class="setting__top">' + F.photoHtml(e, 'setting__img') +
-        '<div class="setting__info"><p class="eyebrow eyebrow--small">' + F.category(e.cat).name + '</p><h3>' + F.esc(e.name) + '</h3>' +
+        '<div class="setting__info"><span class="hidden-tag"' + (e.hidden ? '' : ' hidden') + '>' + F.icon('eyeOff') + 'Скрыта с сайта</span>' +
+          '<p class="eyebrow eyebrow--small">' + F.category(e.cat).name + '</p><h3>' + F.esc(e.name) + '</h3>' +
           (e.specs.length ? '<p>' + F.esc(e.specs.join(' · ')) + '</p>' : '') + '</div>' +
         '<button type="button" class="icon-btn" data-edit="' + e.id + '" title="Редактировать" aria-label="Редактировать: ' + F.esc(e.name) + '">' + F.icon('pencil') + '</button>' +
       '</div>' +
@@ -90,23 +107,29 @@
           return '<button type="button" role="radio" aria-checked="' + (e.status === s) + '" class="status-switch__btn is-' + s + (e.status === s ? ' is-on' : '') + '" data-status="' + s + '">' + F.STATUS[s].label + '</button>';
         }).join('') +
       '</div>' +
+      '<label class="visible-switch"><input type="checkbox" role="switch" data-visible' + (e.hidden ? '' : ' checked') + '>' +
+        '<span><b>Показывать на сайте</b><small data-visible-hint>' + visibleHint(e) + '</small></span></label>' +
     '</article>';
   }
 
   function render() {
     renderCounters();
     renderChips();
-    var cats = activeCat === 'all'
-      ? F.CATEGORIES.filter(function (c) { return fleet.some(function (e) { return e.cat === c.id; }); })
-      : [F.category(activeCat)];
+    var onlyHidden = activeCat === 'hidden';
+    function inView(e, c) { return e.cat === c.id && (!onlyHidden || e.hidden); }
+    var cats = isCategory(activeCat)
+      ? [F.category(activeCat)]
+      : F.CATEGORIES.filter(function (c) { return fleet.some(function (e) { return inView(e, c); }); });
     var html = cats.map(function (c) {
-      var list = fleet.filter(function (e) { return e.cat === c.id; });
+      var list = fleet.filter(function (e) { return inView(e, c); });
       return '<h3 class="fleet__group">' + c.name + ' <span>' + list.length + '</span></h3>' +
         (list.length
           ? '<div class="settings">' + list.map(settingCard).join('') + '</div>'
           : '<div class="empty">В этой категории пока нет техники. <button type="button" class="btn btn--accent" data-add>' + F.icon('plus') + ' Добавить</button></div>');
     }).join('');
-    $('settings').innerHTML = html || '<div class="empty">Парк пуст. <button type="button" class="btn btn--accent" data-add>' + F.icon('plus') + ' Добавить технику</button></div>';
+    $('settings').innerHTML = html || (onlyHidden
+      ? '<div class="empty">Скрытой техники нет — вся техника показывается на сайте.</div>'
+      : '<div class="empty">Парк пуст. <button type="button" class="btn btn--accent" data-add>' + F.icon('plus') + ' Добавить технику</button></div>');
   }
 
   $('chips').addEventListener('click', function (ev) {
@@ -127,8 +150,8 @@
   }
 
   // Save after a quick inline change; roll back if the browser storage is full
-  function persist() {
-    if (F.save(fleet)) { toast('Сохранено'); return; }
+  function persist(msg) {
+    if (F.save(fleet)) { toast(msg || 'Сохранено'); return; }
     toast('Не удалось сохранить: хранилище браузера переполнено', true);
     fleet = F.load();
     render();
@@ -162,6 +185,18 @@
 
   // Save numbers when the owner leaves the field (or presses Enter)
   $('settings').addEventListener('change', function (ev) {
+    // "Show on the site" switch: the card stays in the panel either way
+    var vis = ev.target.closest('[data-visible]');
+    if (vis) {
+      var card = vis.closest('[data-id]');
+      var item = byId(card.getAttribute('data-id'));
+      item.hidden = !vis.checked;
+      applyVisibility(card, item);
+      renderCounters();
+      renderChips();
+      persist(item.hidden ? 'Скрыта с сайта' : 'Снова на сайте');
+      return;
+    }
     var input = ev.target.closest('[data-field]');
     if (!input) return;
     var e = byId(input.closest('[data-id]').getAttribute('data-id'));
@@ -230,12 +265,13 @@
     var e = id ? byId(id) : null;
     editingId = e ? e.id : null;
     $('editorTitle').textContent = e ? 'Редактировать технику' : 'Новая техника';
-    $('fCat').value = e ? e.cat : (activeCat !== 'all' ? activeCat : F.CATEGORIES[0].id);
+    $('fCat').value = e ? e.cat : (isCategory(activeCat) ? activeCat : F.CATEGORIES[0].id);
     $('fName').value = e ? e.name : '';
     $('fSpecs').value = e ? e.specs.join(', ') : '';
     $('fPrice').value = e && e.price ? e.price : '';
     $('fMin').value = e ? e.minMonths : 1;
     $('fQty').value = e ? e.qty : 1;
+    $('fVisible').checked = e ? !e.hidden : true;
     setStatusUI(e ? e.status : 'free');
     draftPhoto = e ? e.photo : null;
     $('photoInput').value = '';
@@ -317,7 +353,8 @@
       price: price > 0 ? price : null,
       minMonths: Math.min(24, Math.max(1, Math.round(Number($('fMin').value)) || 1)),
       qty: F.clampQty($('fQty').value, 1),
-      status: currentStatus()
+      status: currentStatus(),
+      hidden: !$('fVisible').checked
     });
     var isEdit = !!(editingId && byId(editingId));
     var before = fleet.slice();
@@ -329,7 +366,10 @@
       $('editorErr').textContent = 'Не хватает места в хранилище браузера. Возьмите фото поменьше или удалите ненужные лоты.';
       return;
     }
-    if (activeCat !== 'all' && activeCat !== item.cat) activeCat = item.cat;
+    // Keep the saved card on screen so it can be highlighted
+    if (activeCat === 'hidden' ? !item.hidden : isCategory(activeCat) && activeCat !== item.cat) {
+      activeCat = activeCat === 'hidden' ? 'all' : item.cat;
+    }
     closeEditor();
     render();
     toast(isEdit ? 'Изменения сохранены' : 'Техника добавлена');

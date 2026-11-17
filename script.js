@@ -5,7 +5,9 @@
   var MAX_QTY = 10;
 
   var F = window.Fleet;
-  var fleet = F.load();
+  // Machines the owner switched off stay in the panel but never reach the site
+  function shownFleet() { return F.load().filter(function (e) { return !e.hidden; }); }
+  var fleet = shownFleet();
   var activeCat = 'all';
   var picked = []; // [{ id, qty }] in the order the client added them
 
@@ -267,12 +269,12 @@
   }
 
   function refresh() {
-    fleet = F.load();
-    // Drop machines the owner has just marked as busy
+    fleet = shownFleet();
+    // Drop machines the owner has just marked as busy (hidden ones are already gone from the fleet)
     picked = picked.filter(function (p) { var e = byId(p.id); return e && e.status !== 'busy'; });
     // ...and fit the order into a fleet the owner has just made smaller
     picked.forEach(function (p) { p.qty = Math.min(p.qty, maxQty(byId(p.id))); });
-    $('statMin').textContent = 'от ' + Math.min.apply(null, fleet.map(function (e) { return e.minMonths; })) + ' мес.';
+    $('statMin').textContent = 'от ' + (fleet.length ? Math.min.apply(null, fleet.map(function (e) { return e.minMonths; })) : 1) + ' мес.';
     renderAll();
   }
   F.onChange(refresh);

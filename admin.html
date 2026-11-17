@@ -58,7 +58,7 @@
         <h1>Настройки техники</h1>
       </div>
       <div class="dash__side">
-        <p class="dash__note">Цены — в тенге за месяц. Пустая цена показывается на сайте как «по запросу». Изменения сохраняются сразу.</p>
+        <p class="dash__note">Цены — в тенге за месяц. Пустая цена показывается на сайте как «по запросу». Выключенная техника пропадает с сайта, но остаётся здесь. Изменения сохраняются сразу.</p>
         <button class="btn btn--accent" type="button" id="addBtn"><i data-icon="plus"></i> Добавить технику</button>
       </div>
     </div>
@@ -130,6 +130,11 @@
           <span class="field__label">Статус</span>
           <div class="status-switch" id="fStatus" role="radiogroup" aria-label="Статус техники"></div>
         </div>
+
+        <label class="visible-switch visible-switch--modal">
+          <input type="checkbox" role="switch" id="fVisible" checked>
+          <span><b>Показывать на сайте</b><small>Выключите, чтобы убрать технику из каталога, не удаляя её</small></span>
+        </label>
 
         <p class="field__error" id="editorErr"></p>
       </div>
