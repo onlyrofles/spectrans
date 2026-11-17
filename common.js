@@ -23,41 +23,43 @@
 
   // Fleet from the company's own catalog (Tilda site + Instagram highlights).
   // price: tenge per month, null = "on request". minMonths: minimal rental term.
+  // Demo values for the owner preview: sample prices on half of the fleet and a few
+  // busy / "check availability" units, so every catalog state is visible.
   var DEFAULTS = [
-    { id: 'cat320', cat: 'road', name: 'Экскаватор гусеничный CAT 320', specs: ['Ковш 1,2 м³'] },
-    { id: 't170', cat: 'road', name: 'Бульдозер ЧТЗ Б10М (Т-170)', specs: ['Рыхлитель', 'Отвал'] },
-    { id: 'sem816', cat: 'road', name: 'Бульдозер SEM 816D', specs: ['Рыхлитель', 'Отвал'] },
-    { id: 'sem655', cat: 'road', name: 'Фронтальный погрузчик SEM 655D', specs: ['Ковш 3 м³', 'Грузоподъёмность 5 т'] },
+    { id: 'cat320', cat: 'road', name: 'Экскаватор гусеничный CAT 320', specs: ['Ковш 1,2 м³'], price: 4800000, minMonths: 2 },
+    { id: 't170', cat: 'road', name: 'Бульдозер ЧТЗ Б10М (Т-170)', specs: ['Рыхлитель', 'Отвал'], price: 3200000, status: 'busy' },
+    { id: 'sem816', cat: 'road', name: 'Бульдозер SEM 816D', specs: ['Рыхлитель', 'Отвал'], status: 'confirm' },
+    { id: 'sem655', cat: 'road', name: 'Фронтальный погрузчик SEM 655D', specs: ['Ковш 3 м³', 'Грузоподъёмность 5 т'], price: 3000000 },
     { id: 'sem518', cat: 'road', name: 'Каток грунтовый SEM 518', specs: ['Масса 18 т'] },
-    { id: 'sem919', cat: 'road', name: 'Автогрейдер SEM 919', specs: ['Планировка и профилирование'] },
+    { id: 'sem919', cat: 'road', name: 'Автогрейдер SEM 919', specs: ['Планировка и профилирование'], price: 3600000, status: 'busy' },
     { id: 'dz98', cat: 'road', name: 'Автогрейдер тяжёлый ДЗ-98', specs: ['Колёсная формула 6×6'] },
 
-    { id: 'crane-ivanovets-kamaz', cat: 'lift', name: 'Автокран «Ивановец» на базе КамАЗ', specs: ['25 т', 'Стрела 21 м', 'Вездеход'] },
-    { id: 'crane-chelyabinets', cat: 'lift', name: 'Автокран «Челябинец» на базе Урал', specs: ['25 т', 'Стрела 21 м', 'Вездеход'] },
-    { id: 'crane-ulyanovets', cat: 'lift', name: 'Автокран «Ульяновец» на базе Урал', specs: ['25 т', 'Стрела 21 м', 'Вездеход'] },
-    { id: 'crane-ivanovets-ural', cat: 'lift', name: 'Автокран «Ивановец» на базе Урал', specs: ['16 т', 'Стрела 18 м', 'Вездеход'] },
-    { id: 'agp28', cat: 'lift', name: 'Автовышка АГП-28 на базе КамАЗ', specs: ['Высота 28 м', 'Вездеход'] },
+    { id: 'crane-ivanovets-kamaz', cat: 'lift', name: 'Автокран «Ивановец» на базе КамАЗ', specs: ['25 т', 'Стрела 21 м', 'Вездеход'], price: 4500000 },
+    { id: 'crane-chelyabinets', cat: 'lift', name: 'Автокран «Челябинец» на базе Урал', specs: ['25 т', 'Стрела 21 м', 'Вездеход'], price: 4700000, status: 'busy' },
+    { id: 'crane-ulyanovets', cat: 'lift', name: 'Автокран «Ульяновец» на базе Урал', specs: ['25 т', 'Стрела 21 м', 'Вездеход'], status: 'confirm' },
+    { id: 'crane-ivanovets-ural', cat: 'lift', name: 'Автокран «Ивановец» на базе Урал', specs: ['16 т', 'Стрела 18 м', 'Вездеход'], price: 3800000 },
+    { id: 'agp28', cat: 'lift', name: 'Автовышка АГП-28 на базе КамАЗ', specs: ['Высота 28 м', 'Вездеход'], price: 3300000, status: 'confirm' },
     { id: 'yamobur', cat: 'lift', name: 'Ямобур на базе Урал', specs: ['Бурение до 5 м', 'Буры 200–800 мм', '4×4'] },
 
-    { id: 'ural-platform', cat: 'cargo', name: 'Урал тягач с полуприцепом-площадкой', specs: ['Площадка 12 м', 'Вездеход'] },
-    { id: 'ural-manip-trailer', cat: 'cargo', name: 'Урал тягач с манипулятором и полуприцепом', specs: ['Площадка 12 м', 'Вездеход'] },
+    { id: 'ural-platform', cat: 'cargo', name: 'Урал тягач с полуприцепом-площадкой', specs: ['Площадка 12 м', 'Вездеход'], price: 3200000 },
+    { id: 'ural-manip-trailer', cat: 'cargo', name: 'Урал тягач с манипулятором и полуприцепом', specs: ['Площадка 12 м', 'Вездеход'], status: 'busy' },
     { id: 'kamaz-platform', cat: 'cargo', name: 'КамАЗ тягач с полуприцепом-площадкой', specs: ['Площадка 12 м', 'Вездеход'] },
-    { id: 'kamaz-dump', cat: 'cargo', name: 'Самосвал КамАЗ', specs: ['Кузов 15 м³'] },
-    { id: 'ural-manip3', cat: 'cargo', name: 'Урал бортовой с манипулятором 3 т', specs: ['КМУ 3 т', 'Вездеход'] },
+    { id: 'kamaz-dump', cat: 'cargo', name: 'Самосвал КамАЗ', specs: ['Кузов 15 м³'], price: 2400000 },
+    { id: 'ural-manip3', cat: 'cargo', name: 'Урал бортовой с манипулятором 3 т', specs: ['КМУ 3 т', 'Вездеход'], price: 2900000, minMonths: 2 },
     { id: 'ural-manip4', cat: 'cargo', name: 'Урал бортовой с манипулятором 4 т и прицепом', specs: ['КМУ 4 т', 'Прицеп 6 м', 'Вездеход'] },
-    { id: 'ural-pipe', cat: 'cargo', name: 'Урал-трубоплетевоз', specs: ['Роспуск до 30 м', 'Вездеход'] },
+    { id: 'ural-pipe', cat: 'cargo', name: 'Урал-трубоплетевоз', specs: ['Роспуск до 30 м', 'Вездеход'], status: 'confirm' },
     { id: 'ural-water', cat: 'cargo', name: 'Урал тягач с цистерной под техводу', specs: ['18 м³', 'Вездеход'], photo: null },
-    { id: 'ural-fuel', cat: 'cargo', name: 'Урал топливозаправщик', specs: ['5 500 л', 'Насос и счётчик ГСМ', 'Вездеход'] },
+    { id: 'ural-fuel', cat: 'cargo', name: 'Урал топливозаправщик', specs: ['5 500 л', 'Насос и счётчик ГСМ', 'Вездеход'], price: 2700000, status: 'busy' },
     { id: 'tral25', cat: 'cargo', name: 'Трал 25 т с тягачом Урал', specs: ['Перевозка техники', 'Вездеход'] },
     { id: 'tral-kraz', cat: 'cargo', name: 'Трал 60 т с тягачом КрАЗ', specs: ['Перевозка техники', 'Вездеход'] },
 
-    { id: 'ural-kung9', cat: 'crew', name: 'Урал кунг-вахтовка с кузовом', specs: ['9 мест', '4×4', 'Вездеход'] },
-    { id: 'ural-bus', cat: 'crew', name: 'Урал вахтовый автобус', specs: ['28 мест', 'Вездеход'] },
+    { id: 'ural-kung9', cat: 'crew', name: 'Урал кунг-вахтовка с кузовом', specs: ['9 мест', '4×4', 'Вездеход'], price: 2200000 },
+    { id: 'ural-bus', cat: 'crew', name: 'Урал вахтовый автобус', specs: ['28 мест', 'Вездеход'], price: 2500000, status: 'busy' },
     { id: 'ural-speckung', cat: 'crew', name: 'Урал спецкунг для проживания', specs: ['До 6 человек', 'Вездеход'] },
-    { id: 'vagon', cat: 'crew', name: 'Вагончики жилые', specs: ['Проживание на объекте'] },
+    { id: 'vagon', cat: 'crew', name: 'Вагончики жилые', specs: ['Проживание на объекте'], price: 180000, minMonths: 3 },
 
-    { id: 'gazelle-next', cat: 'light', name: 'ГАЗель NEXT фермер, тент', specs: ['Кузов 5,2 м'] },
-    { id: 'gazelle-business', cat: 'light', name: 'ГАЗель Бизнес цельнометаллическая', specs: ['Грузопассажирская'] },
+    { id: 'gazelle-next', cat: 'light', name: 'ГАЗель NEXT фермер, тент', specs: ['Кузов 5,2 м'], price: 900000 },
+    { id: 'gazelle-business', cat: 'light', name: 'ГАЗель Бизнес цельнометаллическая', specs: ['Грузопассажирская'], status: 'confirm' },
     { id: 'sprinter', cat: 'light', name: 'Mercedes-Benz Sprinter с прицепом', specs: ['Фургон', 'Прицеп до 5 т'] }
   ].map(function (e) {
     return Object.assign({ photo: 'img/' + e.id + '.jpg', price: null, minMonths: 1, status: 'free' }, e);
